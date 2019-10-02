@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <title>Automatas</title>
+</head>
+<body>
+        <h2>Automatas finitos</h2>
+        <form name="formularioLSG">
+            <div class="form-group" >
+                <label for="exampleFormControlTextarea1">Ingresar evento</label>
+                <textarea  class="form-control" id="exampleFormControlTextarea1" rows="6" style="resize: none" placeholder=" ingresa tu cadena aqui 
+                ejemplo :
+                int calculo (int data){
+                instrucciones;
+                }"></textarea>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="checar()">Imprimir</button>
+            <button type="button" class="btn btn-primary" onclick="limpiar()">Limpiar</button>
+            <button type="button" class="btn btn-primary" id="mostrar" onclick="mostrar_tabla()">Mostrar tabla</button>
+        </form>        
+        <!-- <div class="alert alert-danger" role="alert">
+                No ha metido la cadena favor de hacerlo
+        </div> -->
+        <br>    
+        <canvas id="lienzo" width="1350" height="160">Su navegador no soporta canvas :( </canvas>
+        <br>
+        <div id="datos_tabla" style="display: none">
+                <form>
+                    <table class="table table-hover" >                
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Elemento</th>                              
+                    </tr>
+                    </thead>
+                    <tbody id="tablita">                  
+                    </tbody>
+                    </table> 
+            </form>
+        </div>        
+        
+<script  type="text/javascript">
+    var valor = true
+    var canvas = document.getElementById("lienzo");
+            if (canvas && canvas.getContext) {
+            var ctx = canvas.getContext("2d");
+            var ctx1 = canvas.getContext("2d");                
+            }
+    function checar() {
+        var info_textarea= document.getElementById("exampleFormControlTextarea1").value;
+        var sin_saltos=info_textarea.replace("\n"," ");
+        var otro = sin_saltos.replace("\n"," ")                
+        var cadena = otro.split("");                
+        //console.log(cadena);        
+        
+        var hay_tipo = false;
+        var tipo_dato = '';
+        var cadenaCompleta = '';
+        var num_maximo = 0;        
+        var varriable_completa = ''; var hasta_parentesis = '';
+        var hay_q1_q2 = false;
+        var prueba = '';
+        var pare_inicio = false; var ya_hay_uno = false;
+
+        if (document.getElementById("exampleFormControlTextarea1").value == ""){
+        alert("No ha metido la cadena favor de hacerlo")
+        }else{
+            document.getElementById('tablita').innerHTML = '';                        
+            ctx.clearRect(0, 0, canvas.width, canvas.height);              
+            cadena.forEach(element => {
+                cadenaCompleta = cadenaCompleta + element;
+                if (hay_tipo == false && num_maximo < cadena.length ) {
+                tipo_dato = tipo_dato + element;
+                    if(tipo_dato == "void " |tipo_dato == "int " | tipo_dato == "float " | tipo_dato == "string " | tipo_dato == "char "){
+                        hay_tipo = true;                                                
+                        }
+                    }
+                num_maximo++;
+                });                
+                var caden = cadenaCompleta.substring(tipo_dato.length, cadena.length);
+                var caden1 = caden.split(""); var ya_fue_verdadero = false;
+                //console.log(caden1);
+                
+                                
+            if (hay_tipo == true) {
+                ctx.font="25pt Georgia";    
+                if (tipo_dato != "void ") {
+                        var fila="<tr><td>"+1+"</td><td>"+'q0,  '+ tipo_dato+ ' ,q1'+ "</td></tr>";
+                        var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                        ctx.fillStyle = "#0b0"; ctx.fillText("q0!",40,30); ctx.fillText("¡q1!",110,30);
+                    
+                    } else {
+                        var fila="<tr><td>"+1+"</td><td>"+'q0,  '+ tipo_dato+ ' ,q15'+ "</td></tr>";                        
+                        var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);  
+                        ctx.fillStyle = "#0b0"; ctx.fillText("q0!",40,30); ctx.fillText("¡q15!",90,90);  
+                    }
+                
+                
+                if (isNaN(caden1[0]) == true) {
+                    var m = 2; var veces_pasadas = 0;
+                    var palabra_reservada_se_usa = false;                    
+                    var ya_no_te_metas = false; var se_repitio = false;
+                    
+                    //validar que el primer caracter no sea numero,  aqui va desde el nombre de la variable hasta el (
+                    caden1.forEach(element => {
+                        //parentesis de inicio
+                        //aqui se ubica el parentesis de inicio
+                        if(pare_inicio == false && prueba == false ){
+                                if (element == '(' && element != ' ' && hay_q1_q2 == true){
+                                    if (tipo_dato != "void ") {
+                                        var fila="<tr><td>"+m+"</td><td>"+'q2,  '+ element+ ' ,q3'+ "</td></tr>";
+                                        var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);   
+                                        ctx.fillStyle = "#0b0"; ctx.fillText("¡q3!",270,30);
+                                        } else {
+                                            var fila="<tr><td>"+m+"</td><td>"+'q16,  '+ element+ ' ,q17'+ "</td></tr>";
+                                            var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);  
+                                            ctx.fillStyle = "#0b0"; ctx.fillText("¡q17!",270,140);
+                                            }
+                                    pare_inicio = true;                                                   
+                                    ya_no_te_metas = true;
+                                    } 
+                            }
+                                                           
+                        varriable_completa = varriable_completa + element;
+                        prueba = verificar(varriable_completa);                        
+                        
+                        if (prueba == false && ya_fue_verdadero == false && element) {
+                            hasta_parentesis = hasta_parentesis + element;
+                            if(hay_q1_q2 == false){
+                                hay_q1_q2 = true; veces_pasadas++;
+                                if(tipo_dato != "void "){
+                                    var fila="<tr><td>"+m+"</td><td>"+'q1,  '+ element+ ' ,q2'+ "</td></tr>"; var btn = document.createElement("TR");  btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                    ctx.fillStyle = "#0b0"; ctx.fillText("¡q2!",180,30);
+
+                                    }else{
+                                        var fila="<tr><td>"+m+"</td><td>"+'q15,  '+ element+ ' ,q16'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);    
+                                        ctx.fillStyle = "#0b0"; ctx.fillText("¡q16!",140,140);
+                                        }
+                                }else if(ya_no_te_metas == false && prueba == false && element != ' '){
+                                    veces_pasadas++;
+                                        if (tipo_dato != "void ") {
+                                                var fila="<tr><td>"+m+"</td><td>"+'q2,  '+ element+ ' ,q2'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                                ctx.fillStyle = "#ff0"; ctx.fillText("¡q2!",180,30);
+                                            } else {
+                                                var fila="<tr><td>"+m+"</td><td>"+'q16,  '+ element+ ' ,q16'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                                ctx.fillStyle = "#ff0"; ctx.fillText("¡q16!",140,140);
+                                            }                                               
+                                    }                            
+                            }else{
+                                ya_fue_verdadero = true;
+                                if (tipo_dato != "void ") { ctx.fillStyle = "#b00";  ctx.fillText("¡q1!",110,30); ctx.fillText("¡q2!",180,30);}
+                                    else { ctx.fillStyle = "#b00"; ctx.fillText("¡q15!",90,90); ctx.fillText("¡q16!",140,140);}
+                                }                                                                                            
+                        m++;                    
+                    });
+                    if(pare_inicio == false){
+                        if (tipo_dato != 'void ') {
+                            ctx.fillStyle = "#f00"; ctx.fillText("¡q2!",180,30);
+                        } else {
+                            ctx.fillStyle = "#f00"; ctx.fillText("¡q16!",140,140);
+                        }                            
+                        }
+                    var des_paren0 =caden.substring(veces_pasadas+1, caden1.length);
+                    var des_paren1 = des_paren0.split("");
+                    var pare_fin = false; var otro = veces_pasadas+3;
+                    var hay_tipo2 = false; var tipo_dato2 = ''; var hay_q4_q5 = false; var ya_hubo_coma = false; var ya_hubo_tipo2 = false;
+                    var concatenar_variable_parentesis = ''; var chequeo = ''; var ya_fue_verdadero1 = false;
+                    var contadorpareFin = 0; var corchete_inicio = false; var ins = false; var vari_parent = ''; var no_habia_numero = false; var aqui_estuvo_mal = false;
+                    console.log(des_paren1);
+                    var coma_parent = '';
+                    
+                    //aqui metemeos los datos que se introducen dentro de el parentesis hasta instrucciones
+                    des_paren1.forEach(element => {
+                        if (pare_inicio == true && se_repitio == false && ya_fue_verdadero == false) {
+                            if(hay_tipo2 == true){
+                                //aqui ubicamos los datos de q4 a q5 y su repeticion q5 a q5
+                                concatenar_variable_parentesis = concatenar_variable_parentesis + element;                                
+                                chequeo = verificar(concatenar_variable_parentesis);
+                                if(chequeo == false && ya_fue_verdadero1 == false ){
+                                    vari_parent = vari_parent + element;
+                                    if (isNaN(vari_parent[0]) == true) {
+                                        coma_parent = '';
+                                        if (pare_fin == false) {
+                                        if (tipo_dato != "void ") {
+                                                if (hay_q4_q5 == false && element != ' ') {
+                                                    var fila="<tr><td>"+otro+"</td><td>"+'q4,  '+ element+ ' ,q5'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                                    hay_q4_q5 = true;
+                                                    ctx.fillStyle = "#0b0";ctx.fillText("¡q5!",450,30); 
+                                                }else if(element != ' ' && element != ')' && element != ',') {
+                                                        var fila="<tr><td>"+otro+"</td><td>"+'q5,  '+ element+ ' ,q5'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                                        ctx.fillStyle = "#ff0";ctx.fillText("¡q5!",450,30);                                             
+                                                        }
+                                        } else {
+                                            if (hay_q4_q5 == false && element != ' ') {
+                                                var fila="<tr><td>"+otro+"</td><td>"+'q18,  '+ element+ ' ,q19'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);                                        
+                                                ctx.fillStyle = "#0b0";ctx.fillText("¡q19!",500,140); 
+                                                hay_q4_q5 = true;
+                                            }else if(element != ' ' && element != ')' && element != ',') {
+                                                var fila="<tr><td>"+otro+"</td><td>"+'q19,  '+ element+ ' ,q19'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                                ctx.fillStyle = "#ff0"; ctx.fillText("¡q19!",500,140); 
+                                                }
+                                            }                                        
+                                        }                                       
+                                    }else{
+                                        no_habia_numero = true;
+                                        if (tipo_dato != 'void ') {
+                                            ctx.fillStyle = "#f00"; ctx.fillText("¡q4!",340,30);                                            
+                                        } else {
+                                            ctx.fillStyle = "#f00"; ctx.fillText("¡q18!",400,140);
+                                        }                                        
+                                    }                                                                        
+                                }else{
+                                    ya_fue_verdadero1 = true;
+                                    if(tipo_dato != 'void '){ ctx.fillStyle = "#b00"; ctx.fillText("¡q4!",340,30); ctx.fillText("¡q5!",450,30);}
+                                    else{ ctx.fillStyle = "#b00"; ctx.fillText("¡q18!",400,140); ctx.fillText("¡q19!",500,140);}
+                                }                               
+                            }
+                            
+                            if(pare_fin == false && ya_fue_verdadero1 == false && no_habia_numero == false){
+                                contadorpareFin++;
+                                if (element == ')') {
+                                    pare_fin = true;                                    
+                                    if (des_paren1[0] != ')') {
+                                       if (hay_tipo2 != false) {
+                                            if (tipo_dato != "void "){
+                                                var fila="<tr><td>"+otro+"</td><td>"+'q5 '+ element+ ' ,q7'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                                ctx.fillStyle = "#0b0"; ctx.fillText("¡q7!",600,30);
+                                                } else {
+                                                var fila="<tr><td>"+otro+"</td><td>"+'q19,  '+ element+ ' ,q21'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                                ctx.fillStyle = "#0b0"; ctx.fillText("¡q21!",600,140);
+                                                    }                                           
+                                       }
+                                    } else {
+                                        if (tipo_dato != "void "){
+                                            var fila="<tr><td>"+otro+"</td><td>"+'q3  '+ element+ ' ,q7'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                            ctx.fillStyle = "#0b0"; ctx.fillText("¡q7!",500,30);
+                                            } else {
+                                            var fila="<tr><td>"+otro+"</td><td>"+'q17,  '+ element+ ' ,q21'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                            ctx.fillStyle = "#0b0"; ctx.fillText("¡q21!",500,140);
+                                                }
+                                            }
+                                        }                                    
+                                    }                                                        
+                            
+                            if(hay_tipo2 == false && ya_fue_verdadero1 == false){
+                                tipo_dato2 = tipo_dato2 +element;                                                                                                  
+                                if(tipo_dato2 == "int " | tipo_dato2 == "float " | tipo_dato2 == "string " | tipo_dato2 == "char " | tipo_dato2 == ",int " | tipo_dato2 == ",float " | tipo_dato2 == ",string " | tipo_dato2 == ",char " | tipo_dato2 == " int" | tipo_dato2 == " float" | tipo_dato2 == " string" | tipo_dato2 == " char"){
+                                    coma_parent = '';
+                                    hay_tipo2 = true;              
+                                    otro = (otro +1)- tipo_dato2.length;
+                                    if (ya_hubo_tipo2 == false) {
+                                        ya_hubo_tipo2 = true;                                        
+                                        if (tipo_dato != "void ") {
+                                            var fila="<tr><td>"+otro+"</td><td>"+'q3,  '+ tipo_dato2+ ' ,q4'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila;document.getElementById("tablita").appendChild(btn);
+                                            ctx.fillStyle = "#0b0"; ctx.fillText("¡q4!",340,30);
+                                        } else {
+                                            var fila="<tr><td>"+otro+"</td><td>"+'q17,  '+ tipo_dato2+ ' ,q18'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                            ctx.fillStyle = "#0b0"; ctx.fillText("¡q18!",400,140);
+                                        }
+                                    }else if(ya_hubo_tipo2 == true){
+                                        if (tipo_dato != "void ") {
+                                            var fila="<tr><td>"+otro+"</td><td>"+'q3,  '+ tipo_dato2+ ' ,q4'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila;document.getElementById("tablita").appendChild(btn);
+                                            ctx.fillStyle = "#ff0"; ctx.fillText("¡q4!",340,30);
+                                        } else {
+                                            var fila="<tr><td>"+otro+"</td><td>"+'q17,  '+ tipo_dato2+ ' ,q18'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                            ctx.fillStyle = "#ff0"; ctx.fillText("¡q18!",400,140);
+                                        }
+                                    }                                   
+                                    }                                        
+                                }
+                                
+                            
+                            if (element == ',' | element == ', ' && hay_tipo2 == true  | element == ',s' || element == ',i' |  element == ',c') {
+                                
+                                hay_tipo2 = false;
+                                hay_q4_q5 = false;
+                                tipo_dato2 = '';
+                                vari_parent = '';
+                                concatenar_variable_parentesis = '';
+                                if (ya_hubo_coma == false) {
+                                    ya_hubo_coma = true;
+                                    if (tipo_dato != "void "){
+                                        var fila="<tr><td>"+otro+"</td><td>"+'q3  '+ element+ ' q6'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                        ctx.fillStyle = "#0b0"; ctx.fillText("¡q6!",390,90);
+                                    } else {
+                                        var fila="<tr><td>"+otro+"</td><td>"+'q19,  '+ element+ ' ,q20'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                        ctx.fillStyle = "#0b0"; ctx.fillText("¡q20!",450,190);
+                                        }          
+                                } else{
+                                    if (tipo_dato != "void "){
+                                        var fila="<tr><td>"+otro+"</td><td>"+'q3  '+ element+ ' q6'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                        ctx.fillStyle = "#ff0"; ctx.fillText("¡q6!",390,90);
+                                    } else {
+                                        var fila="<tr><td>"+otro+"</td><td>"+'q19,  '+ element+ ' ,q20'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                        ctx.fillStyle = "#ff0"; ctx.fillText("¡q20!",450,190);
+                                        }          
+                                }                                                                                                  
+                            }
+
+                            if( aqui_estuvo_mal == false){
+                                coma_parent = coma_parent +element;
+                                console.log(coma_parent);
+                                
+                                if (coma_parent == ',)') {
+                                    aqui_estuvo_mal = true;                                    
+                                }                                
+                            }
+                        
+                            if(pare_fin == true){
+                                if(element == '{' && corchete_inicio == false ){
+                                    corchete_inicio = true;
+                                     if (des_paren1[0] != ')') {
+                                       if (hay_tipo2 != false) {
+                                            if (tipo_dato != "void "){
+                                                var fila="<tr><td>"+otro+"</td><td>"+'q7 '+ element+ ' ,q8'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                                ctx.fillStyle = "#0b0"; ctx.fillText("¡q8!",700,30);
+                                                } else {
+                                                var fila="<tr><td>"+otro+"</td><td>"+'q21,  '+ element+ ' ,q22'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                                ctx.fillStyle = "#0b0"; ctx.fillText("¡q22!",700,140);
+                                                    }                                           
+                                       }
+                                    } else {
+                                        if (tipo_dato != "void "){
+                                            var fila="<tr><td>"+otro+"</td><td>"+'q7  '+ element+ ' ,q8'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                            ctx.fillStyle = "#0b0"; ctx.fillText("¡q8!",700,30);
+                                            } else {
+                                            var fila="<tr><td>"+otro+"</td><td>"+'q21,  '+ element+ ' ,q22'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                            ctx.fillStyle = "#0b0"; ctx.fillText("¡q22!",700,140);
+                                                }
+                                            }
+                                }
+                            }                                                              
+                    }else{
+                            console.log("no podemos empezar");
+                        }                        
+                        otro++;
+                    });
+
+                    if (aqui_estuvo_mal == true) {
+                        if (tipo_dato != 'void ') {
+                            ctx.fillStyle = "#f00"; ctx.fillText("¡q6!",390,90);                            
+                        } else {
+                            ctx.fillStyle = "#f00"; ctx.fillText("¡q20!",450,190);                            
+                        }                    
+                    }
+                    console.log(aqui_estuvo_mal);
+                    
+                    
+                    var instruc =des_paren0.substring(contadorpareFin+1, des_paren1.length);
+                    var instruc1 = instruc.split("");
+                    var instrucciones = ''; var otro_uno = contadorpareFin+1;
+                    var instrucion_dada = false; var retorno = ''; var primer_vez = false; var prueba1 = 0;
+                    var se_metio_return_en_void = false; var corchete_fin_existe = false; var variable = ''; var retorno_dif_void = false;
+                    var verificar_variable = '';  var hay_return_y_variable = false; var ya_paso_q11_q12 = false; var puede_pasar = false;
+                    console.log(instruc1);
+                    instruc1.forEach(element => {
+                        if (ya_fue_verdadero1 == false && aqui_estuvo_mal == false ) {
+                            if (retorno_dif_void == true && element != ' ' && element != ';' && element != '}') {
+                            variable = variable + element;                           
+                            if (isNaN(variable[0]) == true && verificar_variable == false) {
+                                hay_return_y_variable = true;                                
+                                verificar_variable = verificard(variable);
+                                if(ya_paso_q11_q12 == false){
+                                    ya_paso_q11_q12 = true;
+                                    var fila="<tr><td>"+otro_uno+"</td><td>"+'q11,  '+ element + ' ,q12'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                    ctx.fillStyle = "#0b0"; ctx.fillText("¡q12!",1100,30);
+                                }else{
+                                    var fila="<tr><td>"+otro_uno+"</td><td>"+'q12,  '+ element + ' ,q12'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                    ctx.fillStyle = "#ff0"; ctx.fillText("¡q12!",1100,30);
+                                }                                
+                            }else{
+                                alert("no se puede");
+                            }
+                        }
+                            
+                            if(hay_return_y_variable == true && primer_vez == true && verificar_variable == false ){
+                                if(element == ';'){
+                                    var fila="<tr><td>"+otro_uno+"</td><td>"+'q12,  '+ element + ' ,q13'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                    ctx.fillStyle = "#0b0"; ctx.fillText("¡q13!",1200,30);
+                                }
+                                if (element == '}' ) {
+                                    var fila="<tr><td>"+otro_uno+"</td><td>"+'q13,  '+ element + ' ,q14'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                    ctx.fillStyle = "#0b0"; ctx.fillText("¡q14!",1200,100);
+                                }
+                            }
+
+                            if (corchete_inicio == true ) {                            
+                                instrucciones = instrucciones + element;                                                        
+                                if (instrucciones == ' instrucciones' | instrucciones == 'instrucciones' && instrucciones != ';') {
+                                    puede_pasar = true;
+                                    otro_uno = (otro_uno + 3)- instrucciones.length;
+                                    instrucion_dada = true;
+                                    if (tipo_dato != 'void ') {
+                                        var fila="<tr><td>"+otro_uno+"</td><td>"+'q8,  '+ instrucciones + ' ,q9'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                        ctx.fillStyle = "#0b0"; ctx.fillText("¡q9!",800,30);
+                                    } else {
+                                        var fila="<tr><td>"+otro_uno+"</td><td>"+'q22,  '+ instrucciones + ' ,q23'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                        ctx.fillStyle = "#0b0"; ctx.fillText("¡q23!",800,140);
+                                    }
+                                    
+                                }                                                   
+                            }
+                                                
+                            if (instrucion_dada == true && element == ';' && primer_vez == false) {
+                                prueba1++;
+                                primer_vez = true;
+                                retorno = '';
+                                if (tipo_dato != 'void ') {
+                                        var fila="<tr><td>"+otro_uno+"</td><td>"+'q9,  '+ element + ' ,q10'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                        ctx.fillStyle = "#0b0"; ctx.fillText("¡q10!",900,30);
+                                    } else {
+                                        var fila="<tr><td>"+otro_uno+"</td><td>"+'q23,  '+ element + ' ,q24'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                        ctx.fillStyle = "#0b0"; ctx.fillText("¡q24!",900,140);
+                                    }
+                            }                                               
+                            console.log(se_metio_return_en_void);
+                            
+                            if (se_metio_return_en_void == false && element == '}' && corchete_fin_existe == false && hay_return_y_variable == false && puede_pasar == true && retorno_dif_void == false) {
+                                corchete_fin_existe = true;                            
+                                if (tipo_dato != 'void ') {
+                                        var fila="<tr><td>"+otro_uno+"</td><td>"+'q10,  '+ element + ' ,q14'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);                                    
+                                        ctx.fillStyle = "#0b0"; ctx.fillText("¡q14!",1000,100);
+                                    } else {
+                                        var fila="<tr><td>"+otro_uno+"</td><td>"+'q24,  '+ element + ' ,q25'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);                                    
+                                        ctx.fillStyle = "#0b0"; ctx.fillText("¡q25!",1000,140);
+                                    }
+                            }
+                        
+                            if (instrucion_dada == true && element != ';'){
+                                prueba1++;
+                                retorno = retorno + element;                            
+                                if (retorno == 'return' | retorno ==' return' && retorno != ';' | element == 'return;' | element == ';element') {
+                                    otro_uno = (otro_uno +1)- retorno.length;
+                                    if (tipo_dato != 'void ') {
+                                        retorno_dif_void = true;
+                                        var fila="<tr><td>"+otro_uno+"</td><td>"+'q10,  '+ retorno + ' ,q11'+ "</td></tr>"; var btn = document.createElement("TR"); btn.innerHTML=fila; document.getElementById("tablita").appendChild(btn);
+                                        ctx.fillStyle = "#0b0"; ctx.fillText("¡q11!",1000,30);
+                                    } else {
+                                        alert("no se puede retornar nada detro de void")
+                                        se_metio_return_en_void = true;
+                                        ctx.fillStyle = "#f00"; ctx.fillText("¡q24!",900,140);
+                                    }
+                                }
+                            }
+
+                        
+                        otro_uno++;
+                            
+                        }
+                    });
+                    if(verificar_variable == true){
+                        ctx.fillStyle = "#f00"; ctx.fillText("¡q11!",1000,30);
+                        ctx.fillStyle = "#f00"; ctx.fillText("¡q12!",1100,30);
+
+                    }
+                } else {
+                        ctx.font="25pt Georgia";
+                        // aqui marca que q1 no es valido porque la primer letra es un numero
+                        if (tipo_dato != "void ") { ctx.fillStyle = "#b00";  ctx.fillText("¡q1!",110,30); 
+                        } 
+                        // aqui marca que q15 no es valido porque la primer letra es un numero
+                        else { ctx.fillStyle = "#b00"; ctx.fillText("¡q15!",90,90);  }                    
+                        }
+
+            } else {                
+                alert('no se introducido una funcion invalida')
+                ctx.fillStyle = "#b00"; ctx.font="25pt Georgia"; ctx.fillText("q0!",40,30);
+            }                
+        }
+    }
+    function limpiar() {
+    document.getElementById('tablita').innerHTML = '';        
+    document.getElementById("exampleFormControlTextarea1").value = "";
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    //alert("Se ha limpiado los campos");
+        }
+    function verificar(dato) {                
+        if(dato == 'int'| dato == 'void' | dato == 'string' | dato == 'float' | dato == 'char' | dato == 'int ' | dato == 'int( ' | dato == 'void ' | dato == 'void( ' | dato == 'string ' | dato == 'string( ' | dato == "char " | dato == "char( " | dato == " int " | dato == " char " |dato == " void " | dato == " string " | dato == " int," | dato == " char," |dato == " void," | dato == " string," | dato == " int)" | dato == " char)" |dato == " void)" | dato == " string)" | dato == " int" | dato == " char" |dato == " void" | dato == " string"  | dato == 'int;' ) {
+            return true;            
+            }else{
+                return false;
+            }                                         
+        }
+    function verificard(dato) {
+        if (dato == 'int' | dato == 'void' | dato == 'char' | dato == 'float' | dato == 'float;' | dato == 'int;' | dato == 'char;' | dato == 'void;' | dato == 'string;') {
+            return true;
+        }else{
+            return false;
+        }        
+    }
+    function mostrar_tabla() {
+        var uno = document.getElementById('mostrar');
+        valor?uno.innerText = "Ocultar tabla":uno.innerText = "Mostrar tabla";
+        valor=!valor
+        if (valor == false) {            
+            console.log("mostrar tabla");
+            div = document.getElementById('datos_tabla');
+            div.style.display = '';            
+        }
+        if (valor == true) {            
+            console.log("no mostrar tabla");
+            div = document.getElementById('datos_tabla');
+            div.style.display = 'none';            
+        }                            
+    }
+</script>    
+</body>
+</html>
